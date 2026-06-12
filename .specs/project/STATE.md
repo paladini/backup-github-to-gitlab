@@ -15,6 +15,13 @@
 | D09 | GitLab SSH URL lida de project.ssh_url_to_repo (API) | GitLab pode normalizar path de formas imprevisíveis; construir URL localmente produziria erros silenciosos em repos com nomes especiais | 2026-06-12 |
 | D10 | cleanup() em try/finally em _backup_repo() | Garante que ./tmp/ não acumule clones abandonados independente do tipo de falha | 2026-06-12 |
 
+## Quick Tasks
+
+| ID | Task | Commit | Date |
+|----|------|--------|------|
+| Q01 | Add README.md + MIT LICENSE for open-source release | `docs: add README and MIT license` | 2026-06-12 |
+| Q02 | Create GitHub repo `paladini/backup-github-to-gitlab`, rename branch to `main`, push | git + gh operations | 2026-06-12 |
+
 ## Blockers
 
 _Nenhum no momento._
