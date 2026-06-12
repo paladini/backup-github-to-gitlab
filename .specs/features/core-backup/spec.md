@@ -144,8 +144,8 @@ O usuário tem dezenas de repositórios no GitHub (públicos e privados) e quer 
 
 ## Edge Cases
 
-- WHEN o GitHub retorna rate limit (HTTP 429) THEN o sistema SHALL aguardar o tempo indicado pelo header `X-RateLimit-Reset` e tentar novamente
-- WHEN o GitLab retorna rate limit THEN o sistema SHALL aguardar 60 segundos e tentar novamente (GitLab não expõe header de reset)
+- **(BKP-21)** WHEN o GitHub retorna rate limit (`RateLimitExceededException`) THEN o sistema SHALL calcular o tempo restante até `X-RateLimit-Reset`, exibir aviso ao usuário e aguardar, depois tentar novamente automaticamente
+- **(BKP-22)** WHEN o GitLab retorna rate limit (HTTP 429) THEN o sistema SHALL aguardar 60 segundos (fixo — GitLab não expõe header de reset confiável), exibir aviso e tentar novamente; após 4 tentativas sem sucesso, lançar exceção
 - WHEN um repo no GitLab com mesmo nome já existe mas pertence a outro namespace THEN o sistema SHALL logar erro e pular (não sobrescrever)
 - WHEN o clone SSH falha (timeout, SSH key não reconhecida) THEN o sistema SHALL registrar o repo como erro e continuar com os demais
 - WHEN o diretório temporário de clone não tem espaço em disco THEN o sistema SHALL falhar com mensagem clara indicando o caminho e tamanho disponível
@@ -182,8 +182,10 @@ O usuário tem dezenas de repositórios no GitHub (públicos e privados) e quer 
 | BKP-18 | P1: Windows rmtree lida com arquivos read-only do .git | T6 | Verified |
 | BKP-19 | P1: Cleanup do temp dir em finally (sem vazar em erro) | T7 | Verified |
 | BKP-20 | P1: SSH URL do GitLab lida da resposta da API, não construída | T5 | Verified |
+| BKP-21 | P1: GitHub rate limit → aguarda reset, retry automático | T9 | Verified |
+| BKP-22 | P1: GitLab rate limit (429) → aguarda 60s, retry até 4x | T9 | Verified |
 
-**Coverage:** 20 total, 0 mapeados a tasks, 20 unmapeados ⚠️
+**Coverage:** 22 total, 22 mapeados a tasks ✅
 
 ---
 

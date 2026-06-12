@@ -262,6 +262,32 @@ T7 → T8
 
 ---
 
+### T9: Rate limit retry em GithubClient e GitlabClient
+
+**What**: Adicionar retry automático com espera quando GitHub ou GitLab retorna rate limit
+**Where**: `src/github_client.py`, `src/gitlab_client.py`
+**Depends on**: T4, T5 (já concluídos)
+**Reuses**: classes existentes — mudança cirúrgica sem quebrar interface pública
+**Requirement**: BKP-21, BKP-22
+
+**Tools**:
+- MCP: filesystem
+- Skill: NONE
+
+**Done when**:
+- [ ] `GithubClient.list_repos()` captura `RateLimitExceededException`, calcula segundos até reset via `get_rate_limit().core.reset`, exibe aviso rico e dorme; loop até sucesso
+- [ ] `GitlabClient` tem helper `_call(func, *args, **kwargs)` que tenta até 4 vezes; em HTTP 429 dorme 60s fixos com aviso rico; na 4ª falha lança a exceção original
+- [ ] `repo_exists`, `create_repo` e `get_ssh_url` passam pelo `_call`
+- [ ] `python -c "from src.github_client import GithubClient; from src.gitlab_client import GitlabClient"` passa
+- [ ] Nenhuma interface pública foi alterada (BackupRunner não precisa de mudanças)
+
+**Tests**: none (requer rate limit real para testar — validação manual)
+**Gate**: `python -c "from src.github_client import GithubClient; from src.gitlab_client import GitlabClient; print('OK')"`
+
+**Commit**: `fix(clients): add rate limit retry for GitHub and GitLab`
+
+---
+
 ## Parallel Execution Map
 
 ```
@@ -324,6 +350,7 @@ Projeto greenfield sem TESTING.md definido. Todas as tasks são marcadas como `T
 | T6 | Git subprocess | none | none | ✅ OK |
 | T7 | Orchestration | none | none | ✅ OK |
 | T8 | CLI entry point | none | none | ✅ OK |
+| T9 | Rate limit retry (GitHub + GitLab) | none | none | ✅ OK |
 
 > **Nota**: Para v2, considerar adicionar testes com mocks de PyGithub e python-gitlab para CI/CD.
 
@@ -353,5 +380,7 @@ Projeto greenfield sem TESTING.md definido. Todas as tasks são marcadas como `T
 | BKP-18 | Windows rmtree lida com read-only | T6 | Pending |
 | BKP-19 | Cleanup em finally (sem temp dirs órfãos) | T7 | Pending |
 | BKP-20 | SSH URL lida da resposta da API GitLab | T5 | Pending |
+| BKP-21 | GitHub rate limit → aguarda reset, retry automático | T9 | Verified |
+| BKP-22 | GitLab rate limit → aguarda 60s, retry até 4x | T9 | Verified |
 
-**Coverage:** 20 total, 20 mapeados a tasks ✅
+**Coverage:** 22 total, 22 mapeados a tasks ✅
