@@ -1,0 +1,14 @@
+# GitHub configuration
+github:
+  username: your-github-username   # e.g., paladini
+
+# GitLab configuration
+gitlab:
+  username: your-gitlab-username   # e.g., paladini (can differ from GitHub)
+  url: https://gitlab.com          # Change only for self-hosted GitLab
+
+# Backup options
+backup:
+  include_forks: false     # Include forked repositories? (default: false)
+  include_archived: true   # Include archived repositories? (default: true)
+  temp_dir: ./tmp          # Temporary directory for git clones (cleaned up after each repo)
