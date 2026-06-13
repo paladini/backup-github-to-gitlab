@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 from github import Github, RateLimitExceededException
 from rich.console import Console
 
-from src.models import RepoInfo
+from gh2gl.models import RepoInfo
 
 _console = Console()
 

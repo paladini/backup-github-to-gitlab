@@ -5,7 +5,7 @@ import gitlab
 from gitlab.exceptions import GitlabGetError, GitlabHttpError
 from rich.console import Console
 
-from src.models import RepoInfo
+from gh2gl.models import RepoInfo
 
 _console = Console()
 _RATE_LIMIT_SLEEP = 60
