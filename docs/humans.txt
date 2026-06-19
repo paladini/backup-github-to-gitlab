@@ -1,0 +1,13 @@
+/* TEAM */
+Developer: Fernando Paladini
+GitHub: https://github.com/paladini
+Location: Brazil
+
+/* THANKS */
+Contributors and issue reporters on GitHub.
+
+/* SITE */
+Last update: 2026-06-19
+Language: English
+Standards: HTML5, CSS3, robots.txt, sitemap.xml, llms.txt, Open Graph, Dublin Core, Schema.org
+Components: No frameworks — vanilla HTML/CSS, zero dependencies

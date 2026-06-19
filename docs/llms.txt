@@ -1,0 +1,60 @@
+# backup-github-to-gitlab
+
+> Open-source Python CLI that mirrors all your GitHub repositories to GitLab automatically. Private stays private, public stays public. MIT license.
+
+backup-github-to-gitlab clones every repository from a GitHub account and creates matching repositories on GitLab, preserving visibility exactly. It is idempotent: re-running it pushes incremental updates to existing GitLab repos and creates only the new ones — no duplicates.
+
+## Features
+
+- Visibility-safe: private repos are never created as public; defaults to private when visibility cannot be determined
+- Idempotent: safe to re-run at any time
+- Full mirror: all branches and tags transferred via `git clone --mirror` + `git push --mirror`
+- Dry-run mode: `--dry-run` previews all actions without executing a single write
+- Selective backup: `--filter "pattern-*"` filters repos by glob pattern
+- Works on Windows: handles read-only `.git` files; tested on Windows 10 / PowerShell
+- Rate-limit handling: automatic retry with backoff for GitHub and GitLab API limits
+
+## Requirements
+
+- Python 3.11+
+- Git in PATH
+- SSH key registered on both GitHub and GitLab
+- GitHub personal access token with `repo` scope
+- GitLab personal access token with `api` scope
+
+## Quick start
+
+```bash
+git clone git@github.com:paladini/backup-github-to-gitlab.git
+cd backup-github-to-gitlab
+pip install -r requirements.txt
+cp config.example.yaml config.yaml   # set github.username and gitlab.username
+cp .env.example .env                  # set GITHUB_TOKEN and GITLAB_TOKEN
+python backup.py --dry-run            # preview
+python backup.py                      # run
+```
+
+## CLI reference
+
+```
+python backup.py                          # back up all personal repos
+python backup.py --dry-run               # preview — no writes
+python backup.py --filter "myproject-*"  # selective backup by glob
+python backup.py --include-forks         # include forked repos (default: skip)
+python backup.py --verbose               # show raw git output
+python backup.py --config /path/to.yaml  # use alternate config file
+```
+
+## Known limitations
+
+- Git LFS objects are not transferred (`git clone --mirror` skips them)
+- Organization repos not supported in v1 (planned: `--include-orgs` in v2)
+- Visibility is only set at repo creation time; changing visibility on GitHub later does not update GitLab
+- Every run re-clones all matched repos from GitHub (the push to GitLab is incremental, the clone is not)
+
+## Links
+
+- [Source code and README](https://github.com/paladini/backup-github-to-gitlab)
+- [Issue tracker](https://github.com/paladini/backup-github-to-gitlab/issues)
+- [License (MIT)](https://github.com/paladini/backup-github-to-gitlab/blob/main/LICENSE)
+- [Landing page](https://paladini.github.io/backup-github-to-gitlab/)
