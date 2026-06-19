@@ -1,10 +1,102 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" prefix="og: https://ogp.me/ns# dc: https://purl.org/dc/elements/1.1/">
 <head>
+  <!-- ── Charset & Viewport ── -->
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>backup-github-to-gitlab</title>
-  <meta name="description" content="Mirror all your GitHub repositories to GitLab automatically. Private stays private, public stays public." />
+
+  <!-- ── Primary SEO ── -->
+  <title>backup-github-to-gitlab — Mirror GitHub repos to GitLab automatically</title>
+  <meta name="description" content="Open-source Python tool that mirrors all your GitHub repositories to GitLab automatically. Private stays private, public stays public. Idempotent, dry-run mode, glob filtering, full branch and tag mirroring." />
+  <meta name="keywords" content="github backup, gitlab mirror, github to gitlab, repository backup, git mirror, github gitlab sync, backup repos, open source, python, devops, git automation, self-hosted backup" />
+  <meta name="author" content="Fernando Paladini" />
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+  <meta name="googlebot" content="index, follow" />
+  <meta name="bingbot" content="index, follow" />
+  <meta name="revisit-after" content="7 days" />
+  <meta name="rating" content="general" />
+  <meta name="language" content="en" />
+  <meta name="category" content="Developer Tools, DevOps, Open Source" />
+  <meta name="classification" content="Software, Developer Tools" />
+  <link rel="canonical" href="https://paladini.github.io/backup-github-to-gitlab/" />
+
+  <!-- ── Open Graph (Facebook, LinkedIn, Discord, Slack, WhatsApp…) ── -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://paladini.github.io/backup-github-to-gitlab/" />
+  <meta property="og:site_name" content="backup-github-to-gitlab" />
+  <meta property="og:title" content="backup-github-to-gitlab — Mirror GitHub repos to GitLab automatically" />
+  <meta property="og:description" content="Open-source Python tool that mirrors all your GitHub repositories to GitLab automatically. Private stays private, public stays public. Idempotent, dry-run, glob filtering, full branch and tag mirroring." />
+  <meta property="og:image" content="https://opengraph.githubassets.com/1/paladini/backup-github-to-gitlab" />
+  <meta property="og:image:width" content="1280" />
+  <meta property="og:image:height" content="640" />
+  <meta property="og:image:alt" content="backup-github-to-gitlab — Mirror GitHub repos to GitLab automatically" />
+  <meta property="og:locale" content="en_US" />
+
+  <!-- ── Twitter / X Card ── -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="backup-github-to-gitlab — Mirror GitHub repos to GitLab automatically" />
+  <meta name="twitter:description" content="Open-source Python tool that mirrors all your GitHub repositories to GitLab automatically. Private stays private, public stays public." />
+  <meta name="twitter:image" content="https://opengraph.githubassets.com/1/paladini/backup-github-to-gitlab" />
+  <meta name="twitter:image:alt" content="backup-github-to-gitlab project preview" />
+  <meta name="twitter:creator" content="@paladini" />
+  <meta name="twitter:site" content="@paladini" />
+
+  <!-- ── Dublin Core ── -->
+  <meta name="DC.title" content="backup-github-to-gitlab" />
+  <meta name="DC.creator" content="Fernando Paladini" />
+  <meta name="DC.subject" content="GitHub backup; GitLab mirror; repository synchronization; DevOps; git automation" />
+  <meta name="DC.description" content="Open-source Python tool that mirrors all your GitHub repositories to GitLab automatically, preserving visibility and supporting incremental updates." />
+  <meta name="DC.publisher" content="Fernando Paladini" />
+  <meta name="DC.type" content="Software" />
+  <meta name="DC.format" content="text/html" />
+  <meta name="DC.identifier" content="https://paladini.github.io/backup-github-to-gitlab/" />
+  <meta name="DC.language" content="en" />
+  <meta name="DC.rights" content="MIT License — https://github.com/paladini/backup-github-to-gitlab/blob/main/LICENSE" />
+  <meta name="DC.source" content="https://github.com/paladini/backup-github-to-gitlab" />
+
+  <!-- ── Schema.org JSON-LD ── -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareSourceCode",
+    "name": "backup-github-to-gitlab",
+    "description": "Open-source Python tool that mirrors all your GitHub repositories to GitLab automatically. Private stays private, public stays public. Idempotent, dry-run mode, glob filtering, full branch and tag mirroring.",
+    "url": "https://paladini.github.io/backup-github-to-gitlab/",
+    "codeRepository": "https://github.com/paladini/backup-github-to-gitlab",
+    "programmingLanguage": {
+      "@type": "ComputerLanguage",
+      "name": "Python"
+    },
+    "runtimePlatform": "Python 3.11+",
+    "operatingSystem": ["Linux", "macOS", "Windows"],
+    "license": "https://opensource.org/licenses/MIT",
+    "author": {
+      "@type": "Person",
+      "name": "Fernando Paladini",
+      "url": "https://github.com/paladini"
+    },
+    "keywords": "github, gitlab, backup, mirror, repository, git, devops, automation, python, open-source",
+    "applicationCategory": "DeveloperApplication",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    }
+  }
+  </script>
+
+  <!-- ── Apple / iOS ── -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="backup-github-to-gitlab" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+  <!-- ── Microsoft / Windows ── -->
+  <meta name="msapplication-TileColor" content="#0d1117" />
+  <meta name="msapplication-tooltip" content="Mirror GitHub repos to GitLab automatically" />
+  <meta name="theme-color" content="#0d1117" />
+
+  <!-- ── Referrer & Security ── -->
+  <meta name="referrer" content="no-referrer-when-downgrade" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
