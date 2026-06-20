@@ -47,6 +47,38 @@
 
 ---
 
+## M1.5 — Issues & Wiki Backup
+
+**Goal:** Estender o backup para cobrir wikis (repositórios git separados) e issues (com labels, milestones, comentários), opt-in via config.yaml.
+
+### Features
+
+**Wiki Backup** — IN PROGRESS
+
+- Clone + push do repositório wiki (git@github.com/user/repo.wiki.git → GitLab wiki)
+- Idempotente: push --mirror é incremental
+- Skip silencioso quando repo não tem wiki
+- Habilitado via `backup_wiki: true` em config.yaml
+
+**Issues Migration** — IN PROGRESS
+
+- Listar issues do GitHub (state=all, excluir PRs)
+- Sync de labels e milestones antes das issues
+- Criar issues no GitLab com cabeçalho de atribuição (autor original + data)
+- Migrar comentários em ordem cronológica
+- Idempotente via marcador `<!-- github-issue-id: N -->` no corpo
+- Habilitado via `backup_issues: true` em config.yaml
+
+**Limitações documentadas:**
+
+- Timestamps originais não são preservados (limitação da API GitLab sem admin)
+- Autorias originais não são preservadas (mesmo motivo)
+- Pull Requests não são migrados
+
+**Spec:** `.specs/features/issues-wiki-backup/`
+
+---
+
 ## M2 — Sincronização Automática (v2)
 
 **Goal:** Mudanças no GitHub propagam automaticamente para o GitLab sem re-executar o script manualmente.
@@ -76,5 +108,5 @@
 
 - Suporte a repositórios de organizações (`--include-orgs`)
 - GitLab self-hosted como destino
-- Backup de wikis (repositório git separado no GitHub/GitLab)
+- ~~Backup de wikis~~ → M1.5
 - Notificações por email/Slack ao completar o backup
