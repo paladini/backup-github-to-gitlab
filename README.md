@@ -16,6 +16,8 @@ Having all your code on a single platform is a risk. This tool clones every repo
 - **Visibility-safe** — private repos are *never* created as public; defaults to private when in doubt
 - **Idempotent** — safe to re-run; existing GitLab repos receive incremental pushes, not duplicates
 - **Full mirror** — clones all branches and tags via `git clone --mirror`
+- **Wiki backup** — mirrors each repo's wiki (a separate git repo) to GitLab *(opt-in)*
+- **Issue migration** — copies GitHub Issues with labels, milestones, and comments to GitLab *(opt-in)*
 - **Dry-run mode** — preview every action before executing a single write
 - **Selective backup** — filter by glob pattern (`--filter "myproject-*"`)
 - **Works on Windows** — handles read-only `.git` files; tested on Windows 10 / PowerShell
@@ -74,6 +76,10 @@ backup:
   include_forks: false      # include forked repositories? (default: false)
   include_archived: true    # include archived repositories? (default: true)
   temp_dir: ./tmp           # temporary dir for clones — auto-cleaned after each repo
+
+  # Extended backup (opt-in)
+  backup_wiki: false        # mirror each repo's wiki to GitLab
+  backup_issues: false      # migrate GitHub Issues to GitLab
 ```
 
 **`.env`** — copy from `.env.example`:
@@ -130,6 +136,26 @@ Private repositories on GitHub are **always** created as private on GitLab. Visi
 
 SSH keys are used for all git operations. API tokens are read from environment variables (`.env`), never from the config file, and never written to logs.
 
+## Wiki & Issue Backup
+
+Enable in `config.yaml`:
+
+```yaml
+backup:
+  backup_wiki: true
+  backup_issues: true
+```
+
+**Wiki backup** clones each repo's wiki as a separate git repository and pushes it to the corresponding GitLab wiki. Repos without a wiki are skipped silently. Fully idempotent (`git push --mirror`).
+
+**Issue migration** copies GitHub Issues (open and closed) to GitLab, including labels, milestones, and comments. Pull Requests are not migrated.
+
+> **Known limitations for issue migration:**
+>
+> - **Timestamps are not preserved.** GitLab's API does not allow setting `created_at` without an admin token. All migrated issues will show the migration date.
+> - **Authors are not preserved.** All issues and comments will be attributed to the token owner in GitLab. The original author and date are recorded at the top of each issue/comment body.
+> - **Issue migration is idempotent.** A hidden marker (`<!-- github-issue-id: N -->`) is embedded in each migrated issue. Re-running the script skips already-migrated issues.
+
 ## Known Limitations
 
 | Limitation | Details |
@@ -137,13 +163,15 @@ SSH keys are used for all git operations. API tokens are read from environment v
 | Git LFS | LFS objects are not transferred (`git clone --mirror` skips them) |
 | Organization repos | Not included in v1; planned for v2 with `--include-orgs` |
 | GitLab pull mirroring | Requires GitLab Premium for private repos; a GitHub Actions alternative is planned for v2 |
+| Issue timestamps/authors | Cannot be preserved without a GitLab admin token (see Wiki & Issue Backup above) |
+| Pull Requests | Not migrated (GitLab Merge Requests have different semantics) |
 
 ## Roadmap
 
 - [x] **v1** — Full backup: clone + push via SSH, idempotent, dry-run, selective filter
+- [x] **v1.5** — Wiki mirroring and GitHub Issues migration (opt-in)
 - [ ] **v2** — Auto-sync: GitLab pull mirror (Premium) or GitHub Actions push mirror
 - [ ] **v2** — Organization repos with explicit opt-in
-- [ ] **v3** — Wiki mirroring
 
 ## Contributing
 
