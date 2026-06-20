@@ -45,6 +45,8 @@ def load_config(config_path: str = "config.yaml", overrides: dict = None) -> Con
         dry_run=overrides.get("dry_run", False),
         filter_pattern=overrides.get("filter_pattern", "*"),
         verbose=overrides.get("verbose", False),
+        backup_wiki=backup.get("backup_wiki", False),
+        backup_issues=backup.get("backup_issues", False),
     )
 
 

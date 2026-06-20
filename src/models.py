@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Literal
 
 
@@ -34,3 +34,49 @@ class Config:
     dry_run: bool
     filter_pattern: str
     verbose: bool
+    backup_wiki: bool = False
+    backup_issues: bool = False
+
+
+@dataclass
+class LabelData:
+    name: str
+    color: str
+    description: str
+
+
+@dataclass
+class MilestoneData:
+    github_number: int
+    title: str
+    description: str
+    state: Literal["open", "closed"]
+    due_date: str | None
+
+
+@dataclass
+class CommentData:
+    author: str
+    created_at: str
+    body: str
+
+
+@dataclass
+class IssueData:
+    github_number: int
+    title: str
+    body: str
+    state: Literal["open", "closed"]
+    author: str
+    created_at: str
+    labels: list[str]
+    milestone_number: int | None
+    comments: list[CommentData] = field(default_factory=list)
+
+
+@dataclass
+class IssueMigratorResult:
+    repo_name: str
+    created: int
+    skipped: int
+    errors: int
