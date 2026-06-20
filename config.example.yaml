@@ -12,3 +12,10 @@ backup:
   include_forks: false     # Include forked repositories? (default: false)
   include_archived: true   # Include archived repositories? (default: true)
   temp_dir: ./tmp          # Temporary directory for git clones (cleaned up after each repo)
+
+  # Extended backup (opt-in, disabled by default)
+  backup_wiki: false    # Clone and push each repo's wiki (git repo) to GitLab
+  backup_issues: false  # Migrate GitHub Issues to GitLab (labels, milestones, comments)
+                        # Note: original timestamps and authors cannot be preserved —
+                        # GitLab API requires admin token for that. The original author
+                        # and date are recorded in the issue/comment body instead.

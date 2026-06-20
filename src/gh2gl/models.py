@@ -80,3 +80,10 @@ class IssueMigratorResult:
     created: int
     skipped: int
     errors: int
+
+
+@dataclass
+class RunSummary:
+    repos: list["BackupResult"]
+    wikis: list["BackupResult"]
+    issues: list[IssueMigratorResult]

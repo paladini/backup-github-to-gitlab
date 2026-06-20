@@ -1,8 +1,8 @@
 from rich.console import Console
 
-from src.github_client import GithubClient
-from src.gitlab_client import GitlabClient
-from src.models import IssueData, IssueMigratorResult
+from gh2gl.github_client import GithubClient
+from gh2gl.gitlab_client import GitlabClient
+from gh2gl.models import CommentData, IssueData, IssueMigratorResult
 
 _console = Console()
 
@@ -125,7 +125,7 @@ class IssueMigrator:
         parts.append(f"<!-- github-issue-id: {issue.github_number} -->")
         return "\n".join(parts)
 
-    def _format_comment_body(self, comment: "CommentData") -> str:  # noqa: F821
+    def _format_comment_body(self, comment: CommentData) -> str:
         ts = comment.created_at[:16].replace("T", " ")
         header = f"> 🔄 @{comment.author} em {ts} UTC"
         if comment.body:
