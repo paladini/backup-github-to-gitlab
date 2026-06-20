@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 from github import Github, RateLimitExceededException
 from rich.console import Console
 
-from src.models import RepoInfo
+from src.models import CommentData, IssueData, LabelData, MilestoneData, RepoInfo
 
 _console = Console()
 
@@ -40,6 +40,94 @@ class GithubClient:
                 default_branch=repo.default_branch,
             ))
         return repos
+
+    def get_wiki_ssh_url(self, repo_name: str) -> str:
+        return f"git@github.com:{self._username}/{repo_name}.wiki.git"
+
+    def list_labels(self, repo_name: str) -> list[LabelData]:
+        while True:
+            try:
+                return self._fetch_labels(repo_name)
+            except RateLimitExceededException:
+                self._wait_for_rate_limit_reset()
+
+    def _fetch_labels(self, repo_name: str) -> list[LabelData]:
+        repo = self._github.get_user().get_repo(repo_name)
+        result = []
+        for label in repo.get_labels():
+            result.append(LabelData(
+                name=label.name,
+                color=label.color,
+                description=label.description or "",
+            ))
+        return result
+
+    def list_milestones(self, repo_name: str) -> list[MilestoneData]:
+        while True:
+            try:
+                return self._fetch_milestones(repo_name)
+            except RateLimitExceededException:
+                self._wait_for_rate_limit_reset()
+
+    def _fetch_milestones(self, repo_name: str) -> list[MilestoneData]:
+        repo = self._github.get_user().get_repo(repo_name)
+        result = []
+        for ms in repo.get_milestones(state="all"):
+            due_date = ms.due_on.strftime("%Y-%m-%d") if ms.due_on else None
+            result.append(MilestoneData(
+                github_number=ms.number,
+                title=ms.title,
+                description=ms.description or "",
+                state="closed" if ms.state == "closed" else "open",
+                due_date=due_date,
+            ))
+        return result
+
+    def list_issue_comments(self, repo_name: str, issue_number: int) -> list[CommentData]:
+        while True:
+            try:
+                return self._fetch_issue_comments(repo_name, issue_number)
+            except RateLimitExceededException:
+                self._wait_for_rate_limit_reset()
+
+    def _fetch_issue_comments(self, repo_name: str, issue_number: int) -> list[CommentData]:
+        repo = self._github.get_user().get_repo(repo_name)
+        issue = repo.get_issue(issue_number)
+        result = []
+        for comment in issue.get_comments():
+            result.append(CommentData(
+                author=comment.user.login if comment.user else "unknown",
+                created_at=comment.created_at.isoformat(),
+                body=comment.body or "",
+            ))
+        return result
+
+    def list_issues(self, repo_name: str) -> list[IssueData]:
+        while True:
+            try:
+                return self._fetch_issues(repo_name)
+            except RateLimitExceededException:
+                self._wait_for_rate_limit_reset()
+
+    def _fetch_issues(self, repo_name: str) -> list[IssueData]:
+        repo = self._github.get_user().get_repo(repo_name)
+        result = []
+        for issue in repo.get_issues(state="all", sort="created", direction="asc"):
+            if issue.pull_request is not None:
+                continue
+            comments = self._fetch_issue_comments(repo_name, issue.number)
+            result.append(IssueData(
+                github_number=issue.number,
+                title=issue.title,
+                body=issue.body or "",
+                state="closed" if issue.state == "closed" else "open",
+                author=issue.user.login if issue.user else "unknown",
+                created_at=issue.created_at.isoformat(),
+                labels=[label.name for label in issue.labels],
+                milestone_number=issue.milestone.number if issue.milestone else None,
+                comments=comments,
+            ))
+        return result
 
     def _wait_for_rate_limit_reset(self) -> None:
         reset_time = self._github.get_rate_limit().core.reset
