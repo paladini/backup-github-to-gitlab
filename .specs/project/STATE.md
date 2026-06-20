@@ -39,6 +39,7 @@ _Será preenchido durante a implementação._
 
 ## Deferred Ideas
 
-- Migração de issues/PRs via API (muito complexo para v1, mas APIs existem)
+- ~~Migração de issues/PRs via API~~ → spec criada em M1.5 (issues-wiki-backup)
+- Pull Requests: não migrar (semântica incompatível com GitLab MRs)
 - Suporte a LFS (Git Large File Storage) — clonar com LFS ativo
 - Dashboard web para ver status dos mirrors
