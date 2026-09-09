@@ -1,5 +1,0 @@
-PyGithub>=2.3
-python-gitlab>=4.4
-python-dotenv>=1.0
-rich>=13.7
-PyYAML>=6.0

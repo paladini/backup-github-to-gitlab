@@ -3,10 +3,10 @@ import fnmatch
 from rich.console import Console
 from rich.progress import BarColumn, Progress, SpinnerColumn, TaskProgressColumn, TextColumn
 
-from src.git_ops import GitOps
-from src.github_client import GithubClient
-from src.gitlab_client import GitlabClient
-from src.models import BackupResult, Config, RepoInfo
+from gh2gl.git_ops import GitOps
+from gh2gl.github_client import GithubClient
+from gh2gl.gitlab_client import GitlabClient
+from gh2gl.models import BackupResult, Config, RepoInfo
 
 _console = Console()
 

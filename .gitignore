@@ -1,6 +1,7 @@
 .env
 config.yaml
 tmp/
+github-backup/
 __pycache__/
 *.pyc
 *.pyo

@@ -1,7 +1,8 @@
-# backup-github-to-gitlab
+# gh2gl
 
 > Mirror all your GitHub repositories to GitLab automatically — private stays private, public stays public.
 
+[![PyPI](https://img.shields.io/pypi/v/gh2gl.svg)](https://pypi.org/project/gh2gl/)
 [![Python](https://img.shields.io/badge/python-3.11+-3776AB.svg?logo=python&logoColor=white)](https://python.org)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
@@ -32,16 +33,29 @@ Having all your code on a single platform is a risk. This tool clones every repo
 ## Quick Start
 
 ```bash
+pip install gh2gl
+
+gh2gl init
+# Creates a github-backup/ folder in the current directory
+
+cd github-backup
+# Edit config.yaml — set github.username and gitlab.username
+# Edit .env — set GITHUB_TOKEN and GITLAB_TOKEN
+
+gh2gl --dry-run    # preview — no changes made
+gh2gl              # run the backup
+```
+
+<details>
+<summary>Running from source</summary>
+
+```bash
 git clone git@github.com:paladini/backup-github-to-gitlab.git
 cd backup-github-to-gitlab
-pip install -r requirements.txt
-
-cp config.example.yaml config.yaml   # then edit: set github.username and gitlab.username
-cp .env.example .env                  # then edit: set GITHUB_TOKEN and GITLAB_TOKEN
-
-python backup.py --dry-run            # preview — no changes made
-python backup.py                      # run the backup
+pip install -e .
 ```
+
+</details>
 
 ## Token Setup
 
@@ -60,7 +74,9 @@ python backup.py                      # run the backup
 
 ## Configuration
 
-**`config.yaml`** — copy from `config.example.yaml`:
+After running `gh2gl init`, two files are created in the `github-backup/` folder:
+
+**`config.yaml`**:
 
 ```yaml
 github:
@@ -73,10 +89,10 @@ gitlab:
 backup:
   include_forks: false      # include forked repositories? (default: false)
   include_archived: true    # include archived repositories? (default: true)
-  temp_dir: ./tmp           # temporary dir for clones — auto-cleaned after each repo
+  # temp_dir: ./tmp         # temporary dir for clones — auto-cleaned after each repo
 ```
 
-**`.env`** — copy from `.env.example`:
+**`.env`**:
 
 ```
 GITHUB_TOKEN=ghp_...
@@ -87,24 +103,26 @@ Tokens are loaded at runtime and never logged. `.env` is in `.gitignore`.
 
 ## Usage
 
+Run all commands from inside the `github-backup/` folder (or any folder with `config.yaml` and `.env`):
+
 ```bash
 # Back up all personal repositories
-python backup.py
+gh2gl
 
 # Preview what would happen — no writes
-python backup.py --dry-run
+gh2gl --dry-run
 
 # Back up only repos matching a pattern
-python backup.py --filter "myproject-*"
+gh2gl --filter "myproject-*"
 
 # Include forks (skipped by default)
-python backup.py --include-forks
+gh2gl --include-forks
 
 # Verbose: show raw git output (useful for debugging SSH issues)
-python backup.py --verbose
+gh2gl --verbose
 
 # Use a different config file
-python backup.py --config /path/to/config.yaml
+gh2gl --config /path/to/config.yaml
 ```
 
 ### Example output
@@ -121,7 +139,7 @@ archived-experiment            ~ dry run       would create as private
 
 10 dry run
 
-[DRY RUN] Nenhuma operação foi executada.
+[DRY RUN] No operations were executed.
 ```
 
 ## Security

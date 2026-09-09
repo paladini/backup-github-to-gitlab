@@ -4,7 +4,7 @@ from pathlib import Path
 import yaml
 from dotenv import load_dotenv
 
-from src.models import Config
+from gh2gl.models import Config
 
 
 class ConfigError(Exception):
@@ -19,9 +19,8 @@ def load_config(config_path: str = "config.yaml", overrides: dict = None) -> Con
     if not path.exists():
         raise ConfigError(
             f"'{config_path}' not found.\n"
-            "Create it from the example:\n"
-            "  copy config.example.yaml config.yaml   (Windows)\n"
-            "  cp config.example.yaml config.yaml     (Linux/macOS)"
+            "Run 'gh2gl init' to create a workspace with config.yaml and .env,\n"
+            "then run 'gh2gl' from inside that folder."
         )
 
     load_dotenv()
@@ -52,13 +51,13 @@ def validate_config(config: Config) -> None:
     if not config.github_token:
         raise ConfigError(
             "GITHUB_TOKEN is not set.\n"
-            "Add it to .env (copy from .env.example). Required scope: repo\n"
+            "Add it to .env (edit the file created by 'gh2gl init'). Required scope: repo\n"
             "Create at: https://github.com/settings/tokens/new?scopes=repo"
         )
     if not config.gitlab_token:
         raise ConfigError(
             "GITLAB_TOKEN is not set.\n"
-            "Add it to .env (copy from .env.example). Required scope: api\n"
+            "Add it to .env (edit the file created by 'gh2gl init'). Required scope: api\n"
             "Create at: https://gitlab.com/-/user_settings/personal_access_tokens"
         )
     if not config.github_username:
