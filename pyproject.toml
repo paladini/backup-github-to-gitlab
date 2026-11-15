@@ -36,5 +36,15 @@ Homepage = "https://github.com/paladini/backup-github-to-gitlab"
 [project.scripts]
 gh2gl = "gh2gl.cli:main"
 
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "PyYAML>=6.0",
+]
+
 [tool.hatch.build.targets.wheel]
 packages = ["src/gh2gl"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]

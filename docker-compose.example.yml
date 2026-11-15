@@ -1,0 +1,20 @@
+# Example: cron-friendly gh2gl on a NAS/VPS.
+# Copy to docker-compose.yml, add config.yaml + .env (never commit tokens).
+#
+#   cp config.example.yaml config.yaml   # set github.username / gitlab.username
+#   cp .env.example .env                 # GITHUB_TOKEN + GITLAB_TOKEN
+#   docker compose -f docker-compose.yml run --rm gh2gl --dry-run --config /config/config.yaml
+#
+# SSH: mount a key whose public half is registered on GitHub and GitLab,
+# or set SSH_PRIVATE_KEY in .env (the image writes it to ~/.ssh/id_ed25519).
+
+services:
+  gh2gl:
+    image: ghcr.io/paladini/gh2gl:latest
+    env_file: .env
+    volumes:
+      # Mount the file (not a read-only directory) so ./tmp clones can be written.
+      - ./config.yaml:/config/config.yaml:ro
+      # Uncomment to use a host key instead of SSH_PRIVATE_KEY:
+      # - ${HOME}/.ssh/id_ed25519:/home/gh2gl/.ssh/id_ed25519:ro
+    command: ["--config", "/config/config.yaml"]
