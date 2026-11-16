@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install package and test extras
+        run: pip install -e ".[dev]"
+
+      - name: Pytest
+        run: pytest -q
+
+      - name: CLI help
+        run: gh2gl --help
+
+      - name: Guard against committed tokens
+        run: |
+          if grep -RInE 'ghp_[A-Za-z0-9]+|glpat-[A-Za-z0-9_-]+' \
+            --exclude-dir=.git --exclude-dir=.venv --exclude-dir=venv .; then
+            echo "Possible live token in the tree" >&2
+            exit 1
+          fi
+
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build image
+        run: docker build -t gh2gl:test .
+
+      - name: Image includes git and runs as non-root
+        run: |
+          docker run --rm --entrypoint git gh2gl:test --version
+          uid="$(docker run --rm --entrypoint id gh2gl:test -u)"
+          test "$uid" != "0"
+
+      - name: CLI help inside image
+        run: docker run --rm gh2gl:test --help

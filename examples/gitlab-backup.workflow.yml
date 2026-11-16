@@ -1,0 +1,29 @@
+# Copy this file into *your* repository as .github/workflows/gitlab-backup.yml
+# Requires repo secrets:
+#   GH_BACKUP_TOKEN  — GitHub classic PAT with `repo` (do not use the default GITHUB_TOKEN)
+#   GITLAB_TOKEN     — GitLab PAT with `api`
+#   SSH_PRIVATE_KEY  — private key registered on GitHub and GitLab
+#
+# Commit config.yaml (from config.example.yaml) with usernames only.
+
+name: Backup GitHub to GitLab
+
+on:
+  schedule:
+    - cron: "0 3 * * *"
+  workflow_dispatch:
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: paladini/backup-github-to-gitlab@v1
+        with:
+          config: config.yaml
+          # dry-run: "true"
+        env:
+          GH_BACKUP_TOKEN: ${{ secrets.GH_BACKUP_TOKEN }}
+          GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}

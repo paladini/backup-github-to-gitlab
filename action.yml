@@ -1,0 +1,95 @@
+name: gh2gl
+description: Mirror GitHub repositories to GitLab with gh2gl (visibility-safe, mirror, dry-run).
+author: paladini
+branding:
+  icon: copy
+  color: orange
+
+inputs:
+  config:
+    description: Path to config.yaml in the caller workspace (usernames only; never tokens).
+    required: false
+    default: config.yaml
+  dry-run:
+    description: Preview without creating projects or pushing git objects.
+    required: false
+    default: "false"
+  filter:
+    description: Glob pattern for repository names (same as gh2gl --filter).
+    required: false
+    default: ""
+  include-forks:
+    description: Include forked repositories (same as gh2gl --include-forks).
+    required: false
+    default: "false"
+  include-archived:
+    description: Force-include archived repositories even if config.yaml says false.
+    required: false
+    default: "false"
+  verbose:
+    description: Show git command output (same as gh2gl --verbose).
+    required: false
+    default: "false"
+
+runs:
+  using: composite
+  steps:
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.12"
+
+    - name: Install gh2gl from this Action ref
+      shell: bash
+      run: pip install --quiet "${{ github.action_path }}"
+
+    - name: Prepare SSH and GitHub PAT mapping
+      shell: bash
+      env:
+        SSH_PRIVATE_KEY: ${{ env.SSH_PRIVATE_KEY }}
+        GH_BACKUP_TOKEN: ${{ env.GH_BACKUP_TOKEN }}
+      run: |
+        set -euo pipefail
+        # Prefer GH_BACKUP_TOKEN so the workflow GITHUB_TOKEN cannot shadow a PAT.
+        if [ -n "${GH_BACKUP_TOKEN:-}" ]; then
+          echo "GITHUB_TOKEN=${GH_BACKUP_TOKEN}" >> "$GITHUB_ENV"
+        fi
+
+        if [ -z "${SSH_PRIVATE_KEY:-}" ]; then
+          echo "SSH_PRIVATE_KEY is empty; git clone/push will fail unless keys already exist on the runner."
+          exit 0
+        fi
+
+        mkdir -p "$HOME/.ssh"
+        chmod 700 "$HOME/.ssh"
+        key_file="$HOME/.ssh/id_ed25519"
+        printf '%s\n' "$SSH_PRIVATE_KEY" | tr -d '\r' > "$key_file"
+        chmod 600 "$key_file"
+        ssh-keyscan -t rsa,ecdsa,ed25519 github.com gitlab.com >> "$HOME/.ssh/known_hosts" 2>/dev/null || true
+        chmod 644 "$HOME/.ssh/known_hosts"
+        eval "$(ssh-agent -s)"
+        ssh-add "$key_file"
+        echo "SSH_AUTH_SOCK=${SSH_AUTH_SOCK}" >> "$GITHUB_ENV"
+        echo "SSH_AGENT_PID=${SSH_AGENT_PID}" >> "$GITHUB_ENV"
+
+    - name: Run gh2gl
+      shell: bash
+      run: |
+        set -euo pipefail
+        args=(--config "${{ inputs.config }}")
+        if [ "${{ inputs.dry-run }}" = "true" ]; then
+          args+=(--dry-run)
+        fi
+        if [ -n "${{ inputs.filter }}" ]; then
+          args+=(--filter "${{ inputs.filter }}")
+        fi
+        if [ "${{ inputs.include-forks }}" = "true" ]; then
+          args+=(--include-forks)
+        fi
+        if [ "${{ inputs.include-archived }}" = "true" ]; then
+          args+=(--include-archived)
+        fi
+        if [ "${{ inputs.verbose }}" = "true" ]; then
+          args+=(--verbose)
+        fi
+        gh2gl "${args[@]}"
